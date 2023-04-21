@@ -4,16 +4,24 @@ $('#search').click(function(){
     window.location.href = `/${m_name}`;
 })
 
+$('#textbox').on('keypress', function(e) {
+    if (e.which === 13) {
+        console.log('yes')
+        let m_name = $('#textbox').val()
+        window.location.href = `/${m_name}`;
+    }
+  });
 
 $.ajax({
     url: `/movie_specific/${$('#mname').text()}`,
     type: 'GET',
     success: function(data) {
-        if (data != 'No'){
+        if (typeof(data) != 'string'){
             let {Title, year_lang_plot_node, Genre, Director_Actor, Rating, Poster, Reviews, Similar_movies, Recommended_movies, Flatrate, Buy, Rent, youtube} = data
         
             $('#error').hide()
             $('#content').show()
+            // $('#trailer_box').show()
 
             // poster
             $('#poster').attr('src', Poster);
@@ -139,9 +147,9 @@ $.ajax({
             })
         }
        else{
-        // $('#content').hide()
-        $('#error').show()
         $('#content').hide()
+        // $('#trailer_box').hide()
+        $('#error').show()
         $('#error_txt').text(`Could not match the search results. Check your spelling.`)
         $('#error_txt').css('color', '#E5E5CB')
 

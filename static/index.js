@@ -2,8 +2,15 @@ $('#search').click(function(){
     let m_name = $('#textbox').val()
     console.log(m_name)
     window.location.href = `/${m_name}`;
-    console.log('Hell')
 })
+
+$('#textbox').on('keypress', function(e) {
+    if (e.which === 13) {
+        let m_name = $('#textbox').val()
+        console.log(m_name)
+        window.location.href = `/${m_name}`;
+    }
+  });
 
 // Top Rated
 $.ajax({

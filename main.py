@@ -251,13 +251,11 @@ def trending():
 @app.route("/movie_specific/<mname>")
 def movie_page(mname):
 
-    print('Did not ---------------------------------------')
     filename = f'{mname}.pickle'
     if os.path.exists(f'./searches/{filename}'):
         with open(f'./searches/{filename}', 'rb') as f:
             movie_tree = pickle.load(f)
     else:
-        print('Requested -----------------------------------')
         # omdb data
         OMDb_data = requests.get(f"http://www.omdbapi.com/?t={mname}&plot=full&apikey={secret.OMDb_api_key}").json()
 
