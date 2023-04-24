@@ -5,6 +5,7 @@ import secret
 import pickle
 import os
 import datetime
+import json
 
 app = Flask(__name__)
 app.debug = True
@@ -26,6 +27,7 @@ class Node:
 class Tree:
     def __init__(self):
         self.root = None
+        self.json_dict = {}
 
     def add_root(self, root_node):
         self.root = root_node
@@ -34,7 +36,7 @@ class Tree:
         print(node.data)
         for child in node.children:
             self.traverse_tree(child)
-    
+
     def find(self, node, to_find):
         if node.data == to_find:
             return node.children
@@ -44,6 +46,21 @@ class Tree:
                 if result:
                     return result
         return None
+                
+    def to_dict(self, node):
+        for child in node.children:
+            if child.data != 'OTT':
+                self.json_dict[f'{child.data}'] = [] 
+                for child_of_child in child.children:
+                    self.json_dict[f'{child.data}'].append(child_of_child.data)
+            else:
+                self.json_dict[f'{child.data}'] = {}
+                for child_of_child in child.children:
+                    self.json_dict[f'{child.data}'][f'{child_of_child.data}'] = []
+                    for child_child_child in child_of_child.children:
+                        self.json_dict[f'{child.data}'][f'{child_of_child.data}'].append(child_child_child.data)
+        with open("data.json", "w") as file:
+            json.dump(self.json_dict, file, indent=4)
 
 def generate_top_related_tree(title, movie_list_raw_data):
     # creating nodes and tree
@@ -284,6 +301,9 @@ def movie_page(mname):
         movie_recommendation_raw_data = requests.get(f"https://api.themoviedb.org/3/movie/{TMDb_id}/recommendations?api_key={secret.TMDb_api_key}").json()['results']
         
         movie_tree = generate_movie_tree(OMDb_data, youtube_data, review_raw_data, watch_provider_raw_data, similar_movie_raw_data, movie_recommendation_raw_data)
+
+        ## To generate the sample json data file
+        # movie_tree.to_dict(movie_tree.root)
 
         with open(f'./searches/{mname}.pickle', 'wb') as f:
             pickle.dump(movie_tree, f)
